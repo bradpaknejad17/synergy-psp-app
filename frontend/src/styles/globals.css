@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './tokens.css';
+
+html,body,#__next {
+  height: 100%;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* subtle divider utility */
+.divider { border-top: 1px solid rgba(15,23,42,0.06); }
+
+/* small rounded */
+.rounded-sm { border-radius: var(--radius-sm); }
+
+/* Ghost progress base */
+.ghost-progress {
+  background: linear-gradient(90deg, rgba(99,102,241,0.14) 0%, rgba(99,102,241,0.06) 100%);
+}
+
+/* shimmer skeleton utility */
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
+}
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.02) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Utility to ensure tabular numbers are available via Tailwind usage */
+.font-tnum { font-variant-numeric: tabular-nums; }

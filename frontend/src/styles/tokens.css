@@ -1,0 +1,21 @@
+:root {
+  --accent: #700B70; /* deep royal purple */
+  --bg: #FAFAFB; /* paper white */
+  --surface: #FFFFFF; /* card surface */
+  --text: #0f172a; /* slate-950 */
+  --muted-text: #475569; /* slate-600 */
+  --danger: #DC2626; /* red-600 for errors */
+  --warning: #F59E0B; /* amber-500 for near-due warnings */
+  --radius-sm: 4px; /* 4px rounded */
+}
+
+/* Dark override (optional) */
+.dark {
+  --bg: #0B0C10;
+  --surface: #0F1115;
+  --text: #E6EDF3;
+  --muted-text: #9CA3AF;
+}
+
+/* Utility for tabular numbers */
+.font-tnum { font-variant-numeric: tabular-nums; }
