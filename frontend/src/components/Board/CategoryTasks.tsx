@@ -1,18 +1,30 @@
-"use client"
-import React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import TaskRow from '../Task/TaskRow'
+"use client";
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import TaskRow from "../Task/TaskRow";
 
-export default function CategoryTasks({ name, sortedTasks, collapsed, containerId, onEdit }: { name: string; sortedTasks: any[]; collapsed: boolean; containerId: string; onEdit: (task: any) => void }) {
+export default function CategoryTasks({
+  name,
+  sortedTasks,
+  collapsed,
+  containerId,
+  onEdit,
+}: {
+  name: string;
+  sortedTasks: any[];
+  collapsed: boolean;
+  containerId: string;
+  onEdit: (task: any) => void;
+}) {
   return (
     <AnimatePresence initial={false}>
       {!collapsed && (
         <motion.div
           id={containerId}
           initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
+          animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          transition={{ type: 'tween', duration: 0.18 }}
+          transition={{ type: "tween", duration: 0.18 }}
           className="mt-3 space-y-2 overflow-hidden"
         >
           {/* Column labels row to align with TaskRow grid: title 60%, metrics 20%, status 20% */}
@@ -30,5 +42,5 @@ export default function CategoryTasks({ name, sortedTasks, collapsed, containerI
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
