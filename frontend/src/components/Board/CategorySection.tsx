@@ -10,10 +10,10 @@ export default function CategorySection({ name }: { name: string }) {
   const categoryTasks = tasks.filter((t) => t.category === name);
   // sort: incomplete tasks first, then by due date ascending within each group
   const sortedTasks = [...categoryTasks].sort((a, b) => {
-    const aCur = Number(a.currentValue || 0);
-    const aTgt = Number(a.targetValue || 0);
-    const bCur = Number(b.currentValue || 0);
-    const bTgt = Number(b.targetValue || 0);
+    const aCur = Number(a.completed_value || 0);
+    const aTgt = Number(a.target_value || 0);
+    const bCur = Number(b.completed_value || 0);
+    const bTgt = Number(b.target_value || 0);
     const aCompleted = aCur >= aTgt;
     const bCompleted = bCur >= bTgt;
     if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
@@ -29,8 +29,8 @@ export default function CategorySection({ name }: { name: string }) {
       return Number.isNaN(t) ? Infinity : t;
     };
 
-    const aDue = parseToLocalMillis(a.dueDate);
-    const bDue = parseToLocalMillis(b.dueDate);
+    const aDue = parseToLocalMillis(a.due_date);
+    const bDue = parseToLocalMillis(b.due_date);
     if (aDue === bDue) return 0;
     return aDue < bDue ? -1 : 1;
   });

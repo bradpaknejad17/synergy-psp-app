@@ -18,12 +18,13 @@ export default function PSPSingleView({ pspId }: { pspId: string }) {
   const initialTasks = (psp.tasks || []).map((t: any) => ({
     id: String(t.id),
     category: t.category,
-    title: t.description || '',
-    metricName: '',
-    currentValue: t.completed_value ?? t.currentValue ?? 0,
-    targetValue: t.target_value ?? t.targetValue ?? 1,
+    description: t.description || '',
+    start_date: t.start_date,
+    completed_value: t.completed_value ?? 0,
+    target_value: t.target_value ?? 0,
     unit: t.unit,
-    dueDate: t.due_date
+    due_date: t.due_date,
+    completed: Boolean(t.completed),
   }))
 
   return (

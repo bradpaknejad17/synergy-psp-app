@@ -17,9 +17,9 @@
 /backend/env/
 /backend/.env
 /backend/.env.*
-/backend/__pycache__
-/backend/__pycache__/*
-/backend/*.pyc
+# Ignore all Python bytecode caches
+**/__pycache__/
+**/*.py[cod]
 
 # Virtualenvs
 venv/

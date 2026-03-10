@@ -4,13 +4,15 @@ import { patchTask } from '../lib/api'
 
 export interface Task {
   id: string
+  psp_id?: string | number
   category: string
-  title: string
-  metricName?: string
-  currentValue: number
-  targetValue: number
+  description: string
+  start_date: string
+  due_date?: string | null
+  completed_value: number
+  target_value: number
   unit?: string
-  dueDate?: string | null
+  completed?: boolean
 }
 
 export interface PSP {
@@ -46,8 +48,8 @@ export function PSPProvider({ children, initialTasks = [], psp }: { children: Re
     const prev = tasks.find((t) => t.id === id)
     if (!prev) return
 
-    if (patch.dueDate && psp) {
-      const d = new Date(patch.dueDate)
+    if (patch.due_date && psp) {
+      const d = new Date(patch.due_date)
       const start = new Date((psp as any).start_date || (psp as any).startDate)
       const end = new Date((psp as any).end_date || (psp as any).endDate)
       if (d < start || d > end) {
@@ -70,7 +72,17 @@ export function PSPProvider({ children, initialTasks = [], psp }: { children: Re
 
   async function createTask(task: Partial<Task>) {
     const id = `temp-${Math.random().toString(36).slice(2, 9)}`
-    const newTask: Task = { id, category: task.category || 'General', title: task.title || 'New Task', currentValue: task.currentValue || 0, targetValue: task.targetValue || 1, unit: task.unit || '', dueDate: task.dueDate || null }
+    const newTask: Task = {
+      id,
+      category: task.category || 'General',
+      description: task.description || 'New Task',
+      start_date: task.start_date || new Date().toISOString().slice(0, 10),
+      due_date: task.due_date ?? null,
+      completed_value: task.completed_value ?? 0,
+      target_value: task.target_value ?? 1,
+      unit: task.unit || '',
+      completed: task.completed ?? false,
+    }
     setTasks((cur) => [newTask, ...cur])
 
     try {
@@ -93,8 +105,8 @@ export function PSPProvider({ children, initialTasks = [], psp }: { children: Re
 
     tasks.forEach((t) => {
       const cat = t.category || 'Uncategorized'
-      const cur = Number(t.currentValue || 0)
-      const tgt = Number(t.targetValue || 0)
+      const cur = Number(t.completed_value || 0)
+      const tgt = Number(t.target_value || 0)
       const rawPct = tgt <= 0 ? 0 : Math.round((cur / tgt) * 100)
       const pct = Math.min(100, rawPct)
       if (!byCat[cat]) byCat[cat] = { totalPct: 0, count: 0 }

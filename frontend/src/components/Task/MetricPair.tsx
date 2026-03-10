@@ -2,9 +2,9 @@
 import React from 'react'
 import { formatMetric, formatCompactNumber } from '../../utils/format'
 
-export default function MetricPair({ currentValue, targetValue, unit }: { currentValue?: number; targetValue?: number; unit?: string }) {
-  const curNum = Number(currentValue || 0)
-  const tgtNum = Number(targetValue || 0)
+export default function MetricPair({ completed_value, target_value, unit }: { completed_value?: number; target_value?: number; unit?: string }) {
+  const curNum = Number(completed_value || 0)
+  const tgtNum = Number(target_value || 0)
   const curDisplay = unit && String(unit).toUpperCase() === 'USD' ? formatMetric(curNum, 'USD') : formatCompactNumber(curNum)
   const tgtDisplay = formatCompactNumber(tgtNum, unit)
 

@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
 export default function AddTaskModal({ category, onClose, onCreate, task, onUpdate }: { category?: string; onClose: () => void; onCreate?: (payload: any) => Promise<void>; task?: any; onUpdate?: (id: string, patch: any) => Promise<void> }) {
-  const [title, setTitle] = useState('')
-  const [currentValue, setCurrentValue] = useState<number | ''>('')
+  const [description, setDescription] = useState('')
+  const [completedValue, setCompletedValue] = useState<number | ''>('')
   const [targetValue, setTargetValue] = useState<number | ''>('')
   const [unit, setUnit] = useState('')
   const [dueDate, setDueDate] = useState<string | null>(null)
@@ -13,26 +13,27 @@ export default function AddTaskModal({ category, onClose, onCreate, task, onUpda
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    if (!title.trim()) { setError('Please enter a title'); return }
+    if (!description.trim()) { setError('Please enter a description'); return }
     if (targetValue === '' || Number(targetValue) <= 0) { setError('Please enter a target value'); return }
     const payload = {
       category: task?.category || category,
-      title: title.trim(),
-      currentValue: Number(currentValue) || 0,
-      targetValue: Number(targetValue),
+      description: description.trim(),
+      start_date: (task?.start_date || new Date().toISOString().slice(0, 10)),
+      completed_value: Number(completedValue) || 0,
+      target_value: Number(targetValue),
       unit: unit || undefined,
-      dueDate: dueDate || undefined
+      due_date: dueDate || undefined
     }
     try {
       setSubmitting(true)
       if (task && onUpdate) {
         // compute changed fields only
         const patch: any = {}
-        if (title.trim() !== (task.title || '')) patch.title = title.trim()
-        if (Number(currentValue || 0) !== Number(task.currentValue || 0)) patch.currentValue = Number(currentValue || 0)
-        if (Number(targetValue || 0) !== Number(task.targetValue || 0)) patch.targetValue = Number(targetValue || 0)
+        if (description.trim() !== (task.description || '')) patch.description = description.trim()
+        if (Number(completedValue || 0) !== Number(task.completed_value || 0)) patch.completed_value = Number(completedValue || 0)
+        if (Number(targetValue || 0) !== Number(task.target_value || 0)) patch.target_value = Number(targetValue || 0)
         if ((unit || '') !== (task.unit || '')) patch.unit = unit || ''
-        if ((dueDate || null) !== (task.dueDate || null)) patch.dueDate = dueDate || null
+        if ((dueDate || null) !== (task.due_date || null)) patch.due_date = dueDate || null
         if (Object.keys(patch).length > 0) {
           await onUpdate(task.id, patch)
         }
@@ -48,22 +49,22 @@ export default function AddTaskModal({ category, onClose, onCreate, task, onUpda
   // initialize when editing an existing task
   useEffect(() => {
     if (task) {
-      setTitle(task.title || '')
-      setCurrentValue(task.currentValue ?? '')
-      setTargetValue(task.targetValue ?? '')
+      setDescription(task.description || '')
+      setCompletedValue(task.completed_value ?? '')
+      setTargetValue(task.target_value ?? '')
       setUnit(task.unit || '')
-      setDueDate(task.dueDate || null)
+      setDueDate(task.due_date || null)
     } else {
-      setTitle('')
-      setCurrentValue('')
+      setDescription('')
+      setCompletedValue('')
       setTargetValue('')
       setUnit('')
       setDueDate(null)
     }
   }, [task])
 
-  const initial = useMemo(() => ({ title: task?.title || '', currentValue: task?.currentValue ?? '', targetValue: task?.targetValue ?? '', unit: task?.unit || '', dueDate: task?.dueDate || null }), [task])
-  const dirty = title !== initial.title || String(currentValue) !== String(initial.currentValue) || String(targetValue) !== String(initial.targetValue) || unit !== initial.unit || (dueDate || null) !== (initial.dueDate || null)
+  const initial = useMemo(() => ({ description: task?.description || '', completedValue: task?.completed_value ?? '', targetValue: task?.target_value ?? '', unit: task?.unit || '', dueDate: task?.due_date || null }), [task])
+  const dirty = description !== initial.description || String(completedValue) !== String(initial.completedValue) || String(targetValue) !== String(initial.targetValue) || unit !== initial.unit || (dueDate || null) !== (initial.dueDate || null)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -80,13 +81,13 @@ export default function AddTaskModal({ category, onClose, onCreate, task, onUpda
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-[color:var(--muted-text)]">Title</label>
-            <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className="w-full mt-1 p-2 rounded border text-sm" />
+            <label className="block text-xs text-[color:var(--muted-text)]">Description</label>
+            <input autoFocus value={description} onChange={(e) => setDescription(e.target.value)} className="w-full mt-1 p-2 rounded border text-sm" />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-xs text-[color:var(--muted-text)]">Current</label>
-              <input value={currentValue === '' ? '' : String(currentValue)} onChange={(e) => setCurrentValue(e.target.value === '' ? '' : Number(e.target.value))} type="number" className="w-full mt-1 p-2 rounded border text-sm text-right" />
+              <input value={completedValue === '' ? '' : String(completedValue)} onChange={(e) => setCompletedValue(e.target.value === '' ? '' : Number(e.target.value))} type="number" className="w-full mt-1 p-2 rounded border text-sm text-right" />
             </div>
             <div>
               <label className="block text-xs text-[color:var(--muted-text)]">Target</label>

@@ -6,15 +6,15 @@ import MetricPair from './MetricPair'
 import DueBadge from './DueBadge'
 
 export default function TaskRow({ task, onOpenEdit }: { task: any; onOpenEdit?: (task: any) => void }) {
-  const percent = Math.min(100, Math.round((task.currentValue / Math.max(1, task.targetValue)) * 100))
+  const percent = Math.min(100, Math.round((task.completed_value / Math.max(1, task.target_value)) * 100))
 
-  const curNumTop = Number(task.currentValue || 0)
-  const tgtNumTop = Number(task.targetValue || 0)
+  const curNumTop = Number(task.completed_value || 0)
+  const tgtNumTop = Number(task.target_value || 0)
   const completed = curNumTop >= tgtNumTop
 
   // due date warning
   let daysRemaining: number | null = null
-  if (task.dueDate) {
+  if (task.due_date) {
     // Parse backend date strings like 'YYYY-MM-DD' as local dates (avoid UTC shift)
     const parseToLocalDate = (s: string | undefined | null): Date | null => {
       if (!s) return null
@@ -27,7 +27,7 @@ export default function TaskRow({ task, onOpenEdit }: { task: any; onOpenEdit?: 
       return Number.isNaN(t) ? null : new Date(t)
     }
 
-    const d = parseToLocalDate(task.dueDate)
+    const d = parseToLocalDate(task.due_date)
     if (d) {
       const today = new Date()
       const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -43,12 +43,12 @@ export default function TaskRow({ task, onOpenEdit }: { task: any; onOpenEdit?: 
       </div>
       <div onClick={() => onOpenEdit?.(task)} className="relative grid grid-cols-12 items-center gap-4 py-4 px-3 hover:bg-slate-50 rounded-sm h-auto cursor-pointer" role="listitem">
         <div className="col-span-7 min-w-0 max-w-[60%]">
-          <TaskTitle title={task.title} metricName={task.metricName} />
+          <TaskTitle description={task.description} />
         </div>
 
         <div className="col-span-3 flex items-center justify-end">
           <div className="flex items-baseline gap-1 whitespace-nowrap">
-            <MetricPair currentValue={task.currentValue} targetValue={task.targetValue} unit={task.unit} />
+            <MetricPair completed_value={task.completed_value} target_value={task.target_value} unit={task.unit} />
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export default function TaskRow({ task, onOpenEdit }: { task: any; onOpenEdit?: 
           {completed ? (
             <CompletedBadge />
             ) : (
-            <DueBadge dueDate={task.dueDate} />
+            <DueBadge due_date={task.due_date} />
           )}
         </div>
       </div>
