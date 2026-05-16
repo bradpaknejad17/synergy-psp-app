@@ -1,21 +1,13 @@
-import json
-import pytest
-from backend.app import create_app
 from backend.persistence.models.db import PSP, PSPStatusEnum
 from backend.repository.db import SessionLocal
 
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config['TESTING'] = True
-    with app.test_client() as c:
-        yield c
 
 def test_health(client):
     rv = client.get('/health')
     assert rv.status_code == 200
     data = rv.get_json()
     assert data['status'] == 'ok'
+
 
 def test_create_and_list_psp(client):
     payload = {

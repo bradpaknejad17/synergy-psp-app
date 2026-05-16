@@ -39,9 +39,10 @@ API endpoints:
 - `GET /api/psps` list PSPs (sorted by create time desc)
 - `GET /api/psps/<id>` get PSP detail with tasks and report
 - `POST /api/psps/<id>/tasks` create a task for a PSP
-- `PATCH /api/tasks/<id>` update a task
-- `DELETE /api/tasks/<id>` delete a task
+- `PATCH /api/psps/<id>/tasks/<task_id>` update a task for a PSP
+- `DELETE /api/psps/<id>/tasks/<task_id>` delete a task for a PSP
 
 Notes:
 - Database defaults to `sqlite:///./psp.db`.
+- SQL bootstrap lives at `backend/persistence/migrations/init.sql`.
 - Use Alembic for migrations if evolving schema.

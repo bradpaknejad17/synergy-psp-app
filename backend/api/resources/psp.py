@@ -3,6 +3,7 @@ from typing import List
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 
+from ..error_handlers import normalize_validation_error
 from ...persistence.models.db import PSPStatusEnum
 from ...repository.psp_repo import PSPRepository
 from ...services.psp_service import PSPService
@@ -13,13 +14,15 @@ bp = Blueprint('psp', __name__)
 service = PSPService(PSPRepository())
 
 
+@bp.errorhandler(ValidationError)
+def handle_validation_error(error: ValidationError):
+    return jsonify({"error": normalize_validation_error(error)}), 400
+
+
 @bp.post('/api/psps')
 def create_psp():
-    try:
-        payload = request.get_json() or {}
-        create_request = CreatePSPRequest.model_validate(payload)
-    except ValidationError as e:
-        return jsonify({'error': e.errors()}), 400
+    payload = request.get_json() or {}
+    create_request = CreatePSPRequest.model_validate(payload)
 
     try:
         psp = service.create(create_request)
