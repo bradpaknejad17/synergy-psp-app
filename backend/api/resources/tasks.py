@@ -1,14 +1,20 @@
 from flask import Blueprint, request, jsonify
+<<<<<<< Updated upstream:backend/api/resources/tasks.py
 
 from ...repository import task_repo
+=======
+from ..repository.task_repo import TaskRepository
+from ..services.task_service import TaskService
+>>>>>>> Stashed changes:backend/routes/tasks.py
 
 bp = Blueprint('tasks', __name__)
+service = TaskService(TaskRepository())
 
 
 @bp.post('/api/psps/<int:psp_id>/tasks')
 def create_task(psp_id):
     payload = request.get_json() or {}
-    out = task_repo.create_task(psp_id, payload)
+    out = service.create(psp_id, payload)
     if out is None:
         return jsonify({'error': 'PSP not found'}), 404
     return jsonify(out), 201
@@ -19,7 +25,7 @@ def create_tasks_bulk(psp_id):
     payload = request.get_json() or []
     if not isinstance(payload, list):
         return jsonify({'error': 'expected a JSON array of tasks'}), 400
-    out = task_repo.create_tasks_bulk(psp_id, payload)
+    out = service.create_bulk(psp_id, payload)
     if out is None:
         return jsonify({'error': 'PSP not found'}), 404
     return jsonify(out), 201
@@ -28,7 +34,7 @@ def create_tasks_bulk(psp_id):
 @bp.patch('/api/tasks/<int:task_id>')
 def update_task(task_id):
     payload = request.get_json() or {}
-    out = task_repo.update_task(task_id, payload)
+    out = service.update(task_id, payload)
     if out is None:
         return jsonify({'error': 'Task not found'}), 404
     return jsonify(out)
@@ -36,7 +42,7 @@ def update_task(task_id):
 
 @bp.delete('/api/tasks/<int:task_id>')
 def delete_task(task_id):
-    ok = task_repo.delete_task(task_id)
+    ok = service.delete(task_id)
     if not ok:
         return jsonify({'error': 'Task not found'}), 404
     return ('', 204)

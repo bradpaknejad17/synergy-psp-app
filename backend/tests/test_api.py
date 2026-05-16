@@ -35,6 +35,7 @@ def test_create_and_list_psp(client):
     assert any(p['title'] == 'My PSP' for p in psps)
 
 
+<<<<<<< Updated upstream
 def test_list_psps_can_filter_by_status(client):
     active_payload = {
         'title': 'Active PSP',
@@ -86,3 +87,31 @@ def test_delete_psp_marks_status_deleted(client):
         psp = session.get(PSP, psp_id)
         assert psp is not None
         assert psp.status == PSPStatusEnum.DELETED
+=======
+def test_task_endpoints_use_service_flow(client):
+    psp_rv = client.post('/api/psps', json={
+        'title': 'Task PSP',
+        'start_date': '2026-01-01',
+        'end_date': '2026-12-31'
+    })
+    assert psp_rv.status_code == 201
+    psp_id = psp_rv.get_json()['id']
+
+    create_rv = client.post(f'/api/psps/{psp_id}/tasks', json={
+        'description': 'Test task',
+        'category': 'Finance',
+        'start_date': '2026-01-01',
+        'completed_value': 0,
+        'target_value': 5
+    })
+    assert create_rv.status_code == 201
+    task = create_rv.get_json()
+    assert task['description'] == 'Test task'
+
+    update_rv = client.patch(f"/api/tasks/{task['id']}", json={'completed': True})
+    assert update_rv.status_code == 200
+    assert update_rv.get_json()['completed'] is True
+
+    delete_rv = client.delete(f"/api/tasks/{task['id']}")
+    assert delete_rv.status_code == 204
+>>>>>>> Stashed changes
