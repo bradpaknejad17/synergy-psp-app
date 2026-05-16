@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
-from ..repository import task_repo
+
+from ...repository import task_repo
 
 bp = Blueprint('tasks', __name__)
 
 
-@bp.route('/api/psps/<int:psp_id>/tasks', methods=['POST'])
+@bp.post('/api/psps/<int:psp_id>/tasks')
 def create_task(psp_id):
     payload = request.get_json() or {}
     out = task_repo.create_task(psp_id, payload)
@@ -13,7 +14,7 @@ def create_task(psp_id):
     return jsonify(out), 201
 
 
-@bp.route('/api/psps/<int:psp_id>/tasks/bulk', methods=['POST'])
+@bp.post('/api/psps/<int:psp_id>/tasks/bulk')
 def create_tasks_bulk(psp_id):
     payload = request.get_json() or []
     if not isinstance(payload, list):
@@ -24,7 +25,7 @@ def create_tasks_bulk(psp_id):
     return jsonify(out), 201
 
 
-@bp.route('/api/tasks/<int:task_id>', methods=['PATCH'])
+@bp.patch('/api/tasks/<int:task_id>')
 def update_task(task_id):
     payload = request.get_json() or {}
     out = task_repo.update_task(task_id, payload)
@@ -33,7 +34,7 @@ def update_task(task_id):
     return jsonify(out)
 
 
-@bp.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+@bp.delete('/api/tasks/<int:task_id>')
 def delete_task(task_id):
     ok = task_repo.delete_task(task_id)
     if not ok:

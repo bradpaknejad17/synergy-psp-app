@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields, validate
 
+from .db import PSPStatusEnum
+
 class PSPSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str(required=True, validate=validate.Length(min=1))
@@ -7,7 +9,7 @@ class PSPSchema(Schema):
     vision = fields.Str(allow_none=True)
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    status = fields.Str()
+    status = fields.Str(validate=validate.OneOf([status.value for status in PSPStatusEnum]))
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 
