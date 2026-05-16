@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
-from .repository.db import init_db
 from flask_cors import CORS
+
+from .repository.db import init_db
 
 
 def create_app():
@@ -12,8 +13,8 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # Register blueprints
-    from .routes.psp import bp as psp_bp
-    from .routes.tasks import bp as tasks_bp
+    from .api.resources.psp import bp as psp_bp
+    from .api.resources.tasks import bp as tasks_bp
     app.register_blueprint(psp_bp)
     app.register_blueprint(tasks_bp)
 
@@ -24,6 +25,8 @@ def create_app():
     return app
 
 
+app = create_app()
+
+
 if __name__ == '__main__':
-    app = create_app()
     app.run(host='0.0.0.0', port=5000, debug=True)

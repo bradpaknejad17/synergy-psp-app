@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Date, DateTime, Float, Boolean, ForeignKey
+from sqlalchemy import Boolean, Column, Date, DateTime, Enum as SAEnum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -12,6 +12,12 @@ class CategoryEnum(str, Enum):
     WELL_BEING = "Well-Being"
     COMMUNITY = "Community"
 
+
+class PSPStatusEnum(str, Enum):
+    ACTIVE = "ACTIVE"
+    COMPLETED = "COMPLETED"
+    DELETED = "DELETED"
+
 class PSP(Base):
     __tablename__ = 'psp'
 
@@ -21,7 +27,16 @@ class PSP(Base):
     vision = Column(String)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
-    status = Column(String, default='ACTIVE', nullable=False)
+    status = Column(
+        SAEnum(
+            PSPStatusEnum,
+            name="psp_status_enum",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        default=PSPStatusEnum.ACTIVE,
+        nullable=False,
+    )
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

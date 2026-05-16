@@ -1,101 +1,92 @@
-from typing import Dict, Any, Optional
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
+from typing import Any, Dict, Optional
+
+from ..persistence.models.db import PSP, Task
+from ..persistence.models.schemas import TaskSchema
 from ..repository.db import SessionLocal
-from ..models.models import Task, PSP
-from ..models.schemas import TaskSchema
+from ..utils.date_utils import parse_date
 
 task_schema = TaskSchema()
 
 
-def _parse_date(value: str) -> date:
-    # assume `value` is an ISO date string (YYYY-MM-DD) or datetime string
-    # return a Python date object
-    if 'T' in value:
-        return datetime.fromisoformat(value).date()
-    return date.fromisoformat(value)
-
-
-def create_task(psp_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+def create_task(psp_id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     with SessionLocal() as session:
-        p = session.get(PSP, psp_id)
-        if not p:
+        psp = session.get(PSP, psp_id)
+        if not psp:
             return None
-        t = Task(
+
+        task = Task(
             psp_id=psp_id,
-            description=data.get('description'),
-            category=data['category'],
-            start_date=_parse_date(data['start_date']),
-            due_date=_parse_date(data.get('due_date')),
-            completed_value=data.get('completed_value', 0),
-            target_value=data.get('target_value', 0),
-            unit=data.get('unit'),
-            completed=data.get('completed', False)
+            description=data.get("description"),
+            category=data["category"],
+            start_date=parse_date(data["start_date"]),
+            due_date=parse_date(data["due_date"]) if data.get("due_date") else None,
+            completed_value=data.get("completed_value", 0),
+            target_value=data.get("target_value", 0),
+            unit=data.get("unit"),
+            completed=data.get("completed", False),
         )
-        session.add(t)
+        session.add(task)
         session.commit()
-        session.refresh(t)
-        return task_schema.dump(t)
+        session.refresh(task)
+        return task_schema.dump(task)
 
 
 def create_tasks_bulk(psp_id: int, tasks: list) -> Optional[list]:
-    """Create multiple tasks for a PSP in a single transaction.
-
-    `tasks` is a list of dicts with the same fields accepted by `create_task` (without psp_id).
-    Returns list of created task dicts, or None if PSP not found.
-    """
     with SessionLocal() as session:
-        p = session.get(PSP, psp_id)
-        if not p:
+        psp = session.get(PSP, psp_id)
+        if not psp:
             return None
+
         created = []
         objects = []
         for data in tasks:
-            t = Task(
+            task = Task(
                 psp_id=psp_id,
-                description=data.get('description'),
-                category=data.get('category', 'Uncategorized'),
-                start_date=_parse_date(data.get('start_date')),
-                due_date=_parse_date(data.get('due_date')) if data.get('due_date') else None,
-                completed_value=data.get('completed_value', 0),
-                target_value=data.get('target_value', 0),
-                unit=data.get('unit'),
-                completed=data.get('completed', False)
+                description=data.get("description"),
+                category=data.get("category", "Uncategorized"),
+                start_date=parse_date(data["start_date"]),
+                due_date=parse_date(data["due_date"]) if data.get("due_date") else None,
+                completed_value=data.get("completed_value", 0),
+                target_value=data.get("target_value", 0),
+                unit=data.get("unit"),
+                completed=data.get("completed", False),
             )
-            objects.append(t)
-            session.add(t)
-        # commit once
+            objects.append(task)
+            session.add(task)
+
         session.commit()
-        for t in objects:
-            session.refresh(t)
-            created.append(task_schema.dump(t))
+        for task in objects:
+            session.refresh(task)
+            created.append(task_schema.dump(task))
         return created
 
 
-def update_task(task_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+def update_task(task_id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     with SessionLocal() as session:
-        t = session.get(Task, task_id)
-        if not t:
+        task = session.get(Task, task_id)
+        if not task:
             return None
-        # handle date parsing for known date fields
-        if 'start_date' in data:
-            data['start_date'] = _parse_date(data['start_date'])
-        if 'due_date' in data:
-            data['due_date'] = _parse_date(data['due_date'])
-        for k, v in data.items():
-            if hasattr(t, k):
-                setattr(t, k, v)
-        session.add(t)
+
+        if "start_date" in data and data["start_date"] is not None:
+            data["start_date"] = parse_date(data["start_date"])
+        if "due_date" in data:
+            data["due_date"] = parse_date(data["due_date"]) if data["due_date"] else None
+
+        for key, value in data.items():
+            if hasattr(task, key):
+                setattr(task, key, value)
+
+        session.add(task)
         session.commit()
-        session.refresh(t)
-        return task_schema.dump(t)
+        session.refresh(task)
+        return task_schema.dump(task)
 
 
 def delete_task(task_id: int) -> bool:
     with SessionLocal() as session:
-        t = session.get(Task, task_id)
-        if not t:
+        task = session.get(Task, task_id)
+        if not task:
             return False
-        session.delete(t)
+        session.delete(task)
         session.commit()
         return True

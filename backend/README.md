@@ -5,11 +5,34 @@ This folder contains a Flask backend and SQLite schema for the PSP (Personal Str
 Quick start (macOS):
 
 ```bash
+cd /path/to/synergy-psp-app
 python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv backend/.venv
+source backend/.venv/bin/activate
 pip install -r backend/requirements.txt
 python -m backend.app
 ```
+
+If the virtualenv already exists:
+
+```bash
+cd /path/to/synergy-psp-app
+source backend/.venv/bin/activate
+python -m backend.app
+```
+
+Production-style run command:
+
+```bash
+cd /path/to/synergy-psp-app
+source backend/.venv/bin/activate
+gunicorn 'backend.wsgi:app' --bind 0.0.0.0:5000
+```
+
+Why this works:
+- Run from the repository root so Python can import the `backend` package.
+- Use `python -m backend.app` for local development.
+- Use `gunicorn 'backend.wsgi:app'` for a production WSGI server.
 
 API endpoints:
 - `POST /api/psps` create a PSP
