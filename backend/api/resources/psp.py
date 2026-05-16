@@ -10,7 +10,7 @@ from ...services.psp_service import PSPService
 from ..requests.psp_request import CreatePSPRequest
 
 
-bp = Blueprint('psp', __name__)
+bp = Blueprint('psp', __name__, url_prefix="/api/psp")
 service = PSPService(PSPRepository())
 
 
@@ -19,7 +19,7 @@ def handle_validation_error(error: ValidationError):
     return jsonify({"error": normalize_validation_error(error)}), 400
 
 
-@bp.post('/api/psps')
+@bp.post('/')
 def create_psp():
     payload = request.get_json() or {}
     create_request = CreatePSPRequest.model_validate(payload)
@@ -31,7 +31,7 @@ def create_psp():
         return jsonify({"error": str(e)}), 400
 
 
-@bp.get('/api/psps')
+@bp.get('/')
 def list_psps():
     status_param = request.args.get("status")
     if status_param:
@@ -47,7 +47,7 @@ def list_psps():
     return jsonify(psps)
 
 
-@bp.get('/api/psps/<int:psp_id>')
+@bp.get('/<int:psp_id>')
 def get_psp(psp_id):
     out = service.get_psp_with_tasks(psp_id)
     if not out:
@@ -55,7 +55,7 @@ def get_psp(psp_id):
     return jsonify(out.model_dump(mode="json"))
 
 
-@bp.get('/api/psps/<int:psp_id>/report')
+@bp.get('/<int:psp_id>/report')
 def get_report(psp_id):
     out = service.get_psp_with_tasks(psp_id)
     if not out:
@@ -64,7 +64,7 @@ def get_report(psp_id):
     return jsonify(out.report.model_dump(mode="json"))
 
 
-@bp.delete('/api/psps/<int:psp_id>')
+@bp.delete('/<int:psp_id>')
 def delete_psp(psp_id):
     out = service.delete(psp_id)
     if not out:
