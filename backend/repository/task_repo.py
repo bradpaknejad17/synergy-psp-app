@@ -67,10 +67,10 @@ class TaskRepository:
                 created.append(task)
             return created
 
-    def update_task(self, task_id: int, data: Dict[str, Any]) -> Optional[Task]:
+    def update_task(self, psp_id: int, task_id: int, data: Dict[str, Any]) -> Optional[Task]:
         with SessionLocal() as session:
             task = session.get(Task, task_id)
-            if not task:
+            if not task or task.psp_id != psp_id:
                 return None
 
             if "start_date" in data:
@@ -88,10 +88,10 @@ class TaskRepository:
             session.expunge(task)
             return task
 
-    def delete_task(self, task_id: int) -> bool:
+    def delete_task(self, psp_id: int, task_id: int) -> bool:
         with SessionLocal() as session:
             task = session.get(Task, task_id)
-            if not task:
+            if not task or task.psp_id != psp_id:
                 return False
             session.delete(task)
             session.commit()
