@@ -34,8 +34,6 @@ def test_create_and_list_psp(client):
     assert isinstance(psps, list)
     assert any(p['title'] == 'My PSP' for p in psps)
 
-
-<<<<<<< Updated upstream
 def test_list_psps_can_filter_by_status(client):
     active_payload = {
         'title': 'Active PSP',
@@ -87,7 +85,8 @@ def test_delete_psp_marks_status_deleted(client):
         psp = session.get(PSP, psp_id)
         assert psp is not None
         assert psp.status == PSPStatusEnum.DELETED
-=======
+
+
 def test_task_endpoints_use_service_flow(client):
     psp_rv = client.post('/api/psps', json={
         'title': 'Task PSP',
@@ -114,4 +113,3 @@ def test_task_endpoints_use_service_flow(client):
 
     delete_rv = client.delete(f"/api/tasks/{task['id']}")
     assert delete_rv.status_code == 204
->>>>>>> Stashed changes

@@ -1,11 +1,7 @@
 from flask import Blueprint, request, jsonify
-<<<<<<< Updated upstream:backend/api/resources/tasks.py
 
-from ...repository import task_repo
-=======
-from ..repository.task_repo import TaskRepository
-from ..services.task_service import TaskService
->>>>>>> Stashed changes:backend/routes/tasks.py
+from ...repository.task_repo import TaskRepository
+from ...services.task_service import TaskService
 
 bp = Blueprint('tasks', __name__)
 service = TaskService(TaskRepository())
@@ -17,7 +13,7 @@ def create_task(psp_id):
     out = service.create(psp_id, payload)
     if out is None:
         return jsonify({'error': 'PSP not found'}), 404
-    return jsonify(out), 201
+    return jsonify(out.model_dump(mode="json")), 201
 
 
 @bp.post('/api/psps/<int:psp_id>/tasks/bulk')
@@ -28,7 +24,7 @@ def create_tasks_bulk(psp_id):
     out = service.create_bulk(psp_id, payload)
     if out is None:
         return jsonify({'error': 'PSP not found'}), 404
-    return jsonify(out), 201
+    return jsonify([task.model_dump(mode="json") for task in out]), 201
 
 
 @bp.patch('/api/tasks/<int:task_id>')
@@ -37,7 +33,7 @@ def update_task(task_id):
     out = service.update(task_id, payload)
     if out is None:
         return jsonify({'error': 'Task not found'}), 404
-    return jsonify(out)
+    return jsonify(out.model_dump(mode="json"))
 
 
 @bp.delete('/api/tasks/<int:task_id>')

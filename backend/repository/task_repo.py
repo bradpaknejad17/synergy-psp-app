@@ -1,11 +1,8 @@
 from datetime import date, datetime
 from typing import Any, Dict, Optional
 
-from ..models.models import PSP, Task
-from ..models.schemas import TaskSchema
+from ..persistence.models.db import PSP, Task
 from ..repository.db import SessionLocal
-
-task_schema = TaskSchema()
 
 
 def _parse_date(value: Optional[str]) -> Optional[date]:
@@ -17,7 +14,7 @@ def _parse_date(value: Optional[str]) -> Optional[date]:
 
 
 class TaskRepository:
-    def create_task(self, psp_id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def create_task(self, psp_id: int, data: Dict[str, Any]) -> Optional[Task]:
         with SessionLocal() as session:
             psp = session.get(PSP, psp_id)
             if not psp:
@@ -37,9 +34,10 @@ class TaskRepository:
             session.add(task)
             session.commit()
             session.refresh(task)
-            return task_schema.dump(task)
+            session.expunge(task)
+            return task
 
-    def create_tasks_bulk(self, psp_id: int, tasks: list) -> Optional[list]:
+    def create_tasks_bulk(self, psp_id: int, tasks: list) -> Optional[list[Task]]:
         with SessionLocal() as session:
             psp = session.get(PSP, psp_id)
             if not psp:
@@ -65,10 +63,11 @@ class TaskRepository:
             session.commit()
             for task in objects:
                 session.refresh(task)
-                created.append(task_schema.dump(task))
+                session.expunge(task)
+                created.append(task)
             return created
 
-    def update_task(self, task_id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def update_task(self, task_id: int, data: Dict[str, Any]) -> Optional[Task]:
         with SessionLocal() as session:
             task = session.get(Task, task_id)
             if not task:
@@ -86,7 +85,8 @@ class TaskRepository:
             session.add(task)
             session.commit()
             session.refresh(task)
-            return task_schema.dump(task)
+            session.expunge(task)
+            return task
 
     def delete_task(self, task_id: int) -> bool:
         with SessionLocal() as session:

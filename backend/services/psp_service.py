@@ -2,9 +2,9 @@ from typing import Any, Dict, List, Optional
 
 from ..api.requests.psp_request import CreatePSPRequest
 from ..api.responses.psp_response import PSPDTO, PSPDetailDTO
+from ..mappers.psp_mapper import to_detail_dto, to_dto
 from ..persistence.models.db import PSPStatusEnum
 from ..repository.psp_repo import PSPRepository
-from .psp_mapper import to_detail_dto, to_dto
 from ..repository.psp_repo import aggregate_by_category, compute_psp_percent
 
 
