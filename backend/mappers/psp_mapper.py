@@ -49,7 +49,7 @@ def to_detail_dto(
     percent_complete: float,
     by_category: dict,
 ) -> PSPDetailDTO:
-    base = to_dto(psp)
+    base: PSPDTO = to_dto(psp)
     return PSPDetailDTO(
         **base.model_dump(),
         tasks=[task_to_dto(task) for task in psp.tasks],

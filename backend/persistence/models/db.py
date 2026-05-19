@@ -9,7 +9,7 @@ class CategoryEnum(str, Enum):
     FAMILY_FRIENDS = "Family & Friends"
     FINANCE = "Finance"
     CAREER_EDUCATION = "Career/Education"
-    WELL_BEING = "Well-Being"
+    HEALTH_WELL_BEING = "Health & Well-Being"
     COMMUNITY = "Community"
 
 

@@ -15,7 +15,7 @@ def handle_validation_error(error: ValidationError):
     return jsonify({"error": normalize_validation_error(error)}), 400
 
 
-@bp.post('/<int:psp_id>/tasks')
+@bp.post('/<int:psp_id>/task')
 def create_task(psp_id):
     payload = request.get_json() or {}
     create_request = CreateTaskRequest.model_validate(payload)
@@ -26,7 +26,7 @@ def create_task(psp_id):
     return jsonify(out.model_dump(mode="json")), 201
 
 
-@bp.post('/<int:psp_id>/tasks/bulk')
+@bp.post('/<int:psp_id>/task/bulk')
 def create_tasks_bulk(psp_id):
     payload = request.get_json() or []
     if not isinstance(payload, list):
@@ -39,7 +39,7 @@ def create_tasks_bulk(psp_id):
     return jsonify([task.model_dump(mode="json") for task in out]), 201
 
 
-@bp.patch('/<int:psp_id>/tasks/<int:task_id>')
+@bp.patch('/<int:psp_id>/task/<int:task_id>')
 def update_task(psp_id, task_id):
     payload = request.get_json() or {}
     update_request = UpdateTaskRequest.model_validate(payload)
@@ -50,7 +50,7 @@ def update_task(psp_id, task_id):
     return jsonify(out.model_dump(mode="json"))
 
 
-@bp.delete('/<int:psp_id>/tasks/<int:task_id>')
+@bp.delete('/<int:psp_id>/task/<int:task_id>')
 def delete_task(psp_id, task_id):
     ok = service.delete(psp_id, task_id)
     if not ok:
